@@ -1,0 +1,22 @@
+- name: Setup SSH access
+  hosts: localhost
+  tasks:
+    - name: Create .ssh directory if it doesn't exist
+      file:
+        path: "~/.ssh"
+        state: directory
+        mode: "0700"
+
+    - name: Decrypt and setup SSH key
+      ansible.builtin.copy:
+        src: github
+        dest: "~/.ssh/github"
+        mode: "0600"
+      notify: Start ssh agent and add key
+
+  handlers:
+    - name: Start ssh agent and add key
+      shell: 
+        cmd: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/github
